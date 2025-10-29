@@ -8,6 +8,7 @@ use storage::{load_tasks, save_tasks};
 extern crate colored;
 
 use colored::Colorize;
+use todo_cil::priority_color;
 
 #[derive(Parser)]
 #[command(name = "TODO")]
@@ -42,21 +43,47 @@ fn main() {
             
         }
 
-        Commands::List => {
+        //在添加的时候，如果有优先级数字，则将优先级数字加入。
+
+        // Commands::List => {
+        //     if tasks.is_empty() {
+        //         println!("{}","📭 No tasks yet!".red());
+        //     } else {
+        //         for task in &tasks {
+        //             println!(
+        //                 "{}. [{}] {} ({})",
+        //                 task.id,
+        //                 if task.completed { "x".red() } else { " ".white() },
+        //                 task.description,
+        //                 task.created_at.format("%Y-%m-%d %H:%M:%S")
+        //             );
+        //         }
+        //     }
+        // }
+        Commands::List=>{
             if tasks.is_empty() {
-                println!("{}","📭 No tasks yet!".red());
-            } else {
-                for task in &tasks {
+                println!("{}","没有任务".red());
+            }else{
+                tasks.sort_by_key(|tasks|tasks.priority);
+                for task in &tasks{
                     println!(
-                        "{}. [{}] {} ({})",
-                        task.id,
-                        if task.completed { "x".red() } else { " ".white() },
-                        task.description,
-                        task.created_at.format("%Y-%m-%d %H:%M:%S")
-                    );
+                        "{}",
+                        priority_color(task.priority)(&format!(
+                            "{}. [{}] {} ({})",
+                             task.id,
+                            if task.completed { "x" } else { " " },
+                            task.description,
+                            task.created_at.format("%Y-%m-%d %H:%M:%S")
+                        ))
+
+                    )
+                    
                 }
             }
         }
+
+
+        //更改展示，如果优先级更高，则用红色展示，依次是橙色，蓝色，灰色。
 
         Commands::Done { id } => {
             if let Some(task) = tasks.iter_mut().find(|t| t.id == id) {
