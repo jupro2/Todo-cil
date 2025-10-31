@@ -13,13 +13,13 @@ pub struct Task {
 
 
 impl Task {
-    pub fn new(id: u32, description: String) -> Self {
+    pub fn new(id: u32, description: String,priority:u8) -> Self {
         Task {
             id,
             description,
             completed: false,
             created_at: Utc::now(),
-            priority:1,
+            priority,
         }
     }
 }

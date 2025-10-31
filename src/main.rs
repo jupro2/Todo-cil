@@ -1,6 +1,8 @@
 mod task;
 mod storage;
 
+use std::u8;
+
 use clap::{Parser, Subcommand};
 use task::Task;
 use storage::{load_tasks, save_tasks};
@@ -23,7 +25,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    Add { description: String },
+    Add { description: String,priority:Option<u8> },
     List,
     Done { id: u32 },
     Delete { id: u32 },
@@ -34,14 +36,17 @@ fn main() {
     let mut tasks = load_tasks();
 
     match cli.command {
-        Commands::Add { description } => {
+        Commands::Add { description ,priority} => {
             let id = (tasks.len() as u32) + 1;
-            let new_task = Task::new(id, description);
+            let priority_not_null = priority.unwrap_or(1);
+            let new_task = Task::new(id, description,priority_not_null);
             tasks.push(new_task);
             save_tasks(&tasks);
             println!("{}","Task have add!".green());
             
         }
+
+        //添加priority,如果priority不为空，则添加入新的new
 
         //在添加的时候，如果有优先级数字，则将优先级数字加入。
 
@@ -64,7 +69,7 @@ fn main() {
             if tasks.is_empty() {
                 println!("{}","没有任务".red());
             }else{
-                tasks.sort_by_key(|tasks|tasks.priority);
+                tasks.sort_by_key(|task1|u8::MAX-task1.priority);
                 for task in &tasks{
                     println!(
                         "{}",
