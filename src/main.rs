@@ -1,16 +1,18 @@
 mod task;
 mod storage;
+mod commands;
 
-use std::u8;
+use std::{u8};
 
 use clap::{Parser, Subcommand};
-use task::Task;
-use storage::{load_tasks, save_tasks};
+use storage::{load_tasks};
 
 extern crate colored;
 
-use colored::Colorize;
+
 use todo_cil::priority_color;
+
+use crate::commands::{add, done,delete,list};
 
 #[derive(Parser)]
 #[command(name = "TODO")]
@@ -37,73 +39,21 @@ fn main() {
 
     match cli.command {
         Commands::Add { description ,priority} => {
-            let id = (tasks.len() as u32) + 1;
-            let priority_not_null = priority.unwrap_or(1);
-            let new_task = Task::new(id, description,priority_not_null);
-            tasks.push(new_task);
-            save_tasks(&tasks);
-            println!("{}","Task have add!".green());
-            
+            add(&mut tasks,description,priority);
         }
 
-        //添加priority,如果priority不为空，则添加入新的new
 
-        //在添加的时候，如果有优先级数字，则将优先级数字加入。
-
-        // Commands::List => {
-        //     if tasks.is_empty() {
-        //         println!("{}","📭 No tasks yet!".red());
-        //     } else {
-        //         for task in &tasks {
-        //             println!(
-        //                 "{}. [{}] {} ({})",
-        //                 task.id,
-        //                 if task.completed { "x".red() } else { " ".white() },
-        //                 task.description,
-        //                 task.created_at.format("%Y-%m-%d %H:%M:%S")
-        //             );
-        //         }
-        //     }
-        // }
         Commands::List=>{
-            if tasks.is_empty() {
-                println!("{}","没有任务".red());
-            }else{
-                tasks.sort_by_key(|task1|u8::MAX-task1.priority);
-                for task in &tasks{
-                    println!(
-                        "{}",
-                        priority_color(task.priority)(&format!(
-                            "{}. [{}] {} ({})",
-                             task.id,
-                            if task.completed { "x" } else { " " },
-                            task.description,
-                            task.created_at.format("%Y-%m-%d %H:%M:%S")
-                        ))
-
-                    )
-                    
-                }
-            }
+            list(&mut tasks);
         }
 
-
-        //更改展示，如果优先级更高，则用红色展示，依次是橙色，蓝色，灰色。
 
         Commands::Done { id } => {
-            if let Some(task) = tasks.iter_mut().find(|t| t.id == id) {
-                task.completed = true;
-                save_tasks(&tasks);
-                println!("🎉 Task {} marked as done!", id);
-            } else {
-                println!("⚠️ Task not found!");
-            }
+            done(&mut tasks, id);
         }
 
         Commands::Delete { id } => {
-            tasks.retain(|t| t.id != id);
-            save_tasks(&tasks);
-            println!("🗑️ Task {} deleted!", id);
+            delete(&mut tasks, id);
         }
     }
 
