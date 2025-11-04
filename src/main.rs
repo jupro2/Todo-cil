@@ -1,24 +1,22 @@
-mod task;
-mod storage;
 mod commands;
+mod storage;
+mod task;
 
-use std::{u8};
+use std::u8;
 
 use clap::{Parser, Subcommand};
-use storage::{load_tasks};
+use storage::load_tasks;
 
 extern crate colored;
 
-
 use todo_cil::priority_color;
 
-use crate::commands::{add, done,delete,list};
+use crate::commands::{add, delete, done, edit, list};
 
 #[derive(Parser)]
 #[command(name = "TODO")]
 #[command(about = "This is a simple command-line task manager built with Rust")]
 //--help
-
 
 struct Cli {
     #[command(subcommand)]
@@ -27,10 +25,21 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    Add { description: String,priority:Option<u8> },
+    Add {
+        description: String,
+        priority: Option<u8>,
+    },
     List,
-    Done { id: u32 },
-    Delete { id: u32 },
+    Done {
+        id: u32,
+    },
+    Delete {
+        id: u32,
+    },
+    Edit {
+        id: u32,
+        new_description: String,
+    },
 }
 
 fn main() {
@@ -38,15 +47,16 @@ fn main() {
     let mut tasks = load_tasks();
 
     match cli.command {
-        Commands::Add { description ,priority} => {
-            add(&mut tasks,description,priority);
+        Commands::Add {
+            description,
+            priority,
+        } => {
+            add(&mut tasks, description, priority);
         }
 
-
-        Commands::List=>{
+        Commands::List => {
             list(&mut tasks);
         }
-
 
         Commands::Done { id } => {
             done(&mut tasks, id);
@@ -55,10 +65,11 @@ fn main() {
         Commands::Delete { id } => {
             delete(&mut tasks, id);
         }
+        Commands::Edit {
+            id,
+            new_description,
+        } => {
+            edit(&mut tasks, id, new_description);
+        }
     }
-
 }
-
-
-
-

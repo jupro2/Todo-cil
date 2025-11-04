@@ -1,6 +1,6 @@
-use std::{fs, path::Path};
-use serde_json;
 use crate::task::Task;
+use serde_json;
+use std::{fs, path::Path};
 
 const FILE_PATH: &str = "tasks.json";
 
