@@ -1,19 +1,17 @@
-use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Task {
     pub id: u32,
     pub description: String,
     pub completed: bool,
     pub created_at: DateTime<Utc>,
-    pub priority:u8,
+    pub priority: u8,
 }
 
-
-
 impl Task {
-    pub fn new(id: u32, description: String,priority:u8) -> Self {
+    pub fn new(id: u32, description: String, priority: u8) -> Self {
         Task {
             id,
             description,
@@ -27,4 +25,3 @@ impl Task {
 //增加优先级 等级为1-4，等级4为最高
 
 // 解决时区问题
-

@@ -11,7 +11,7 @@ extern crate colored;
 
 use todo_cil::priority_color;
 
-use crate::commands::{add, delete, done, edit, list};
+use crate::commands::{add, delete, done, edit, list, search};
 
 #[derive(Parser)]
 #[command(name = "TODO")]
@@ -33,14 +33,23 @@ enum Commands {
     Done {
         id: u32,
     },
-    Delete {
+    Del {
         id: u32,
     },
     Edit {
         id: u32,
         new_description: String,
     },
+    S {
+        search_term: String,
+    },
 }
+//add
+// list
+// done
+// delete
+// edit
+// search
 
 fn main() {
     let cli = Cli::parse();
@@ -62,7 +71,7 @@ fn main() {
             done(&mut tasks, id);
         }
 
-        Commands::Delete { id } => {
+        Commands::Del { id } => {
             delete(&mut tasks, id);
         }
         Commands::Edit {
@@ -70,6 +79,9 @@ fn main() {
             new_description,
         } => {
             edit(&mut tasks, id, new_description);
+        }
+        Commands::S { search_term } => {
+            search(&mut tasks, search_term);
         }
     }
 }

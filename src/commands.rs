@@ -22,19 +22,22 @@ pub fn list(tasks: &mut Vec<Task>) {
         tasks.sort_by_key(|task1| u8::MAX - task1.priority);
 
         for task in tasks {
-            println!(
-                "{}",
-                priority_color(task.priority)(&format!(
-                    "{}. [{}] {} ({})",
-                    task.id,
-                    if task.completed { "x" } else { " " },
-                    task.description,
-                    task.created_at.format("%Y-%m-%d %H:%M:%S")
-                ))
-            )
+            if task.completed == false {
+                println!(
+                    "{}",
+                    priority_color(task.priority)(&format!(
+                        "{}. [{}] {} ({})",
+                        task.id,
+                        " ",
+                        task.description,
+                        task.created_at.format("%Y-%m-%d %H:%M:%S")
+                    ))
+                )
+            }
         }
     }
 }
+// 2025年11月6日15:31:05 更改list，只显示未完成的任务，不再显示已经完成的任务
 
 pub fn done(tasks: &mut Vec<Task>, id: u32) {
     if let Some(task) = tasks.iter_mut().find(|t| t.id == id) {
@@ -59,5 +62,36 @@ pub fn edit(tasks: &mut Vec<Task>, id: u32, new_description: String) {
         println!("Task {} updated!", id);
     } else {
         println!("Task not found!");
+    }
+}
+
+pub fn search(tasks: &mut Vec<Task>, search_term: String) {
+    let mut results = Vec::new();
+
+    for task in tasks {
+        if task.description.contains(&search_term) {
+            results.push(task.clone());
+        }
+    }
+
+    if results.is_empty() {
+        println!("{}", "No matching tasks".red());
+    } else {
+        results.sort_by_key(|task1| u8::MAX - task1.priority);
+
+        for task in results {
+            if task.completed == false {
+                println!(
+                    "{}",
+                    priority_color(task.priority)(&format!(
+                        "{}. [{}] {} ({})",
+                        task.id,
+                        " ",
+                        task.description,
+                        task.created_at.format("%Y-%m-%d %H:%M:%S")
+                    ))
+                )
+            }
+        }
     }
 }
